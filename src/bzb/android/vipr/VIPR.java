@@ -1,5 +1,9 @@
 package bzb.android.vipr;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import android.app.Activity;
@@ -24,19 +28,23 @@ public class VIPR extends Activity implements SensorEventListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        Log.i(getClass().getName(), Config.ip);
+        try {
+			Socket connfd = new Socket (Config.ip, Config.port);
+			DataOutputStream out = new DataOutputStream(connfd.getOutputStream()); 
         
-        sensorManager = 
-		    (SensorManager)getSystemService(SENSOR_SERVICE);
-		List<Sensor> sensors = sensorManager.getSensorList( Sensor.TYPE_ORIENTATION );
-		Log.i(getClass().getName(),"Listed sensors");
-		
-		Sensor sensor = sensors.get(0);
-		sensorManager.registerListener(
-		            this, 
-		            sensor,
-		            SensorManager.SENSOR_DELAY_UI );
-		Log.i(getClass().getName(),"Registered listener for sensor " + sensor.getName());
+	        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+			List<Sensor> sensors = sensorManager.getSensorList( Sensor.TYPE_ORIENTATION );
+			Sensor sensor = sensors.get(0);
+			sensorManager.registerListener(
+			            this,
+			            sensor,
+			            SensorManager.SENSOR_DELAY_UI );
+			Log.i(getClass().getName(),"Registered listener for sensor " + sensor.getName());
+        } catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		tvx = (TextView) findViewById(R.id.x);
 		tvy = (TextView) findViewById(R.id.y);
@@ -55,7 +63,6 @@ public class VIPR extends Activity implements SensorEventListener {
 
 	@Override
 	public void onSensorChanged(SensorEvent se) {
-		Log.i(getClass().getName(), se.toString());
 		tvx.setText("x:" + se.values[0]);
 		tvy.setText("y:" + se.values[1]);
 		tvz.setText("z:" + se.values[2]);

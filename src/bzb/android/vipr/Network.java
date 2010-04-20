@@ -11,7 +11,8 @@ import android.widget.EditText;
 public class Network extends Activity {
 
 	private Button button;
-	private EditText field;
+	private EditText ipfield;
+	private EditText portfield;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -19,12 +20,14 @@ public class Network extends Activity {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.ip);
 	    
-	    field = (EditText) findViewById(R.id.field);
+	    ipfield = (EditText) findViewById(R.id.ipfield);
+	    portfield = (EditText) findViewById(R.id.portfield);
 	    
 	    button = (Button) findViewById(R.id.button);
 	    button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	Config.ip = field.getText().toString();
+            	Config.ip = ipfield.getText().toString();
+            	Config.port = Integer.parseInt(portfield.getText().toString());
             	startActivity(new Intent(Network.this, VIPR.class));
             }
         });
