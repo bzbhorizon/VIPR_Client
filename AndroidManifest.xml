@@ -12,8 +12,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".VIPR" />
-		<uses-permission android:name="android.permission.INTERNET"  />
     </application>
-
-
+    <uses-permission android:name="android.permission.INTERNET"  />
 </manifest> 
