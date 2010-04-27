@@ -32,14 +32,19 @@ public class VIPR extends Activity implements SensorEventListener {
     private Button turnLeft;
     private Button turnRight;
     private Button select;
+    private Button clutch;
     
     private ZoomControls zoom;
+    
+    private boolean holding = true;
     
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        holding = true;
         
         new Thread(new Runnable(){
 			public void run () {
@@ -55,6 +60,8 @@ public class VIPR extends Activity implements SensorEventListener {
 					            sensor,
 					            SensorManager.SENSOR_DELAY_UI );
 					Log.i(getClass().getName(),"Registered listener for sensor " + sensor.getName());
+					
+					sendMessage("e");
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -67,21 +74,30 @@ public class VIPR extends Activity implements SensorEventListener {
 		tvy = (TextView) findViewById(R.id.y);
 		tvz = (TextView) findViewById(R.id.z);
 		
+		clutch = (Button) findViewById(R.id.clutch);
+		clutch.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				switchClutch();
+			}
+		});
 		turnLeft = (Button) findViewById(R.id.r0);
 		turnLeft.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				sendMessage("r0");
+				clutchOn();
+				sendMessage("r1");
 			}
 		});
 		turnRight = (Button) findViewById(R.id.r1);
 		turnRight.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				sendMessage("r1");
+				clutchOn();
+				sendMessage("r0");
 			}
 		});
 		select = (Button) findViewById(R.id.c);
 		select.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
+				clutchOn();
 				sendMessage("c");
 			}
 		});
@@ -89,15 +105,41 @@ public class VIPR extends Activity implements SensorEventListener {
 		zoom = (ZoomControls) findViewById(R.id.zoom);
 		zoom.setOnZoomInClickListener(new OnClickListener() {
 			public void onClick(View v) {
+				clutchOn();
 				sendMessage("z0");
 			}
 		});
 		zoom.setOnZoomOutClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				clutchOn();
 				sendMessage("z1");
 			}
 		});
+    }
+    
+    private void switchClutch () {
+    	if (holding) {
+			clutchOff();
+		} else {
+			clutchOn();
+		}
+    }
+    
+    private void clutchOn () {
+    	if (!holding) {
+	    	holding = true;
+			sendMessage("h1");
+			clutch.setText("Start moving");
+    	}
+    }
+    
+    private void clutchOff () {
+    	if (holding) {
+	    	holding = false;
+			sendMessage("h0");
+			clutch.setText("Stop moving");
+    	}
     }
     
 	@Override
@@ -128,16 +170,22 @@ public class VIPR extends Activity implements SensorEventListener {
 
 	@Override
 	public void onSensorChanged(SensorEvent se) {
-		sendMessage(se.values[2] + "," + se.values[1] + "/");
-		tvx.setText("x:" + se.values[0]);
-		tvy.setText("y:" + se.values[1]);
-		tvz.setText("z:" + se.values[2]);
+		if (!holding) {
+			sendMessage(se.values[2] + "," + se.values[1]);
+			tvx.setText("x:" + se.values[0]);
+			tvy.setText("y:" + se.values[1]);
+			tvz.setText("z:" + se.values[2]);
+		} else {
+			tvx.setText("Holding position");
+			tvy.setText("Holding position");
+			tvz.setText("Holding position");
+		}
 	}
 	
 	private void sendMessage (String message) {
 		if (out != null) {
 			try {
-				out.write(message.getBytes());
+				out.write((message + "/").getBytes());
 				out.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
