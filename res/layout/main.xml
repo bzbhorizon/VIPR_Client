@@ -5,7 +5,23 @@
     android:layout_height="fill_parent"
     >
 
-<TextView android:text="x:" android:id="@+id/x" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-<TextView android:text="y:" android:id="@+id/y" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-<TextView android:text="z:" android:id="@+id/z" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:text="x:" android:id="@+id/x" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:text="y:" android:id="@+id/y" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:text="z:" android:id="@+id/z" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    >
+		<Button android:text="Turn left" android:id="@+id/r0" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+		<Button android:text="Turn right" android:id="@+id/r1" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+	</LinearLayout>
+	
+	<Button android:text="Select nearest content" android:id="@+id/c" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+
+	<ZoomControls android:id="@+id/zoom" android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</ZoomControls>
+
+
 </LinearLayout>
